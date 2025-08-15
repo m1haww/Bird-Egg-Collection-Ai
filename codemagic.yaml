@@ -11,8 +11,8 @@ workflows:
         bundle_identifier: com.bird.collection.egg
       vars:
         BUNDLE_ID: "com.bird.collection.egg"
-        XCODE_WORKSPACE: "Bird Egg Collection Ai.xcworkspace"
-        XCODE_SCHEME: "Bird Egg Collection Ai"
+        XCODE_WORKSPACE: "EggAi.xcworkspace"
+        XCODE_SCHEME: "EggAi"
         APP_STORE_APPLE_ID: 6751110469
       xcode: latest
       cocoapods: default
