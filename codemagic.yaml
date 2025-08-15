@@ -4,8 +4,8 @@ workflows:
     max_build_duration: 120
     instance_type: mac_mini_m2
     integrations:
-      app_store_connect: DubaiParks
-    environment: 
+      app_store_connect: Bird Egg Collection Ai
+    environment:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.bird.collection.egg
