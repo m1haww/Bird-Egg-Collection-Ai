@@ -22,6 +22,12 @@ struct ContentView: View {
     @State private var capturedImage: UIImage?
     @State private var showingScanResult = false
     @State private var showPaywall = false
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+    
+    var isIPad: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad
+    }
     
     var body: some View {
         NavigationView {
@@ -38,9 +44,9 @@ struct ContentView: View {
                         showHistory.toggle()
                     }) {
                         Image(systemName: "clock.arrow.circlepath")
-                            .font(.system(size: 24))
+                            .font(.system(size: isIPad ? 28 : 24))
                             .foregroundColor(.white)
-                            .frame(width: 44, height: 44)
+                            .frame(width: isIPad ? 54 : 44, height: isIPad ? 54 : 44)
                             .background(Color.black.opacity(0.3))
                             .clipShape(Circle())
                     }
@@ -49,18 +55,18 @@ struct ContentView: View {
                     
                     // App title
                     Text("Bird Egg Identifier")
-                        .font(.system(size: 20, weight: .semibold))
+                        .font(.system(size: isIPad ? 28 : 20, weight: .semibold))
                         .foregroundColor(.white)
                     
                     Spacer()
                     
-                    HStack(spacing: 12) {
+                    HStack(spacing: isIPad ? 16 : 12) {
                         // Egg Collection button
                         NavigationLink(destination: EggListView()) {
                             Image(systemName: "book.fill")
-                                .font(.system(size: 24))
+                                .font(.system(size: isIPad ? 28 : 24))
                                 .foregroundColor(.white)
-                                .frame(width: 44, height: 44)
+                                .frame(width: isIPad ? 54 : 44, height: isIPad ? 54 : 44)
                                 .background(Color.black.opacity(0.3))
                                 .clipShape(Circle())
                         }
@@ -70,41 +76,41 @@ struct ContentView: View {
                             showSettings.toggle()
                         }) {
                             Image(systemName: "gearshape.fill")
-                                .font(.system(size: 24))
+                                .font(.system(size: isIPad ? 28 : 24))
                                 .foregroundColor(.white)
-                                .frame(width: 44, height: 44)
+                                .frame(width: isIPad ? 54 : 44, height: isIPad ? 54 : 44)
                                 .background(Color.black.opacity(0.3))
                                 .clipShape(Circle())
                         }
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 50)
+                .padding(.horizontal, isIPad ? 40 : 20)
+                .padding(.top, isIPad ? 60 : 50)
                 Spacer()
                 
                 // Bottom controls
-                VStack(spacing: 20) {
+                VStack(spacing: isIPad ? 30 : 20) {
                     // Scan limit indicator
                     if !subscriptionManager.hasUnlockedPremium {
                         Text(freeScanManager.getScanLimitMessage())
-                            .font(.system(size: 14, weight: .medium))
+                            .font(.system(size: isIPad ? 18 : 14, weight: .medium))
                             .foregroundColor(freeScanManager.remainingFreeScans > 0 ? .green : .red)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
+                            .padding(.horizontal, isIPad ? 24 : 16)
+                            .padding(.vertical, isIPad ? 12 : 8)
                             .background(Color.black.opacity(0.7))
-                            .cornerRadius(16)
+                            .cornerRadius(isIPad ? 20 : 16)
                     }
                     
                     // Instruction text
                     Text("Point camera at bird egg")
-                        .font(.system(size: 16, weight: .medium))
+                        .font(.system(size: isIPad ? 20 : 16, weight: .medium))
                         .foregroundColor(.white)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 10)
+                        .padding(.horizontal, isIPad ? 30 : 20)
+                        .padding(.vertical, isIPad ? 14 : 10)
                         .background(Color.black.opacity(0.5))
-                        .cornerRadius(20)
+                        .cornerRadius(isIPad ? 25 : 20)
                     
-                    HStack(spacing: 50) {
+                    HStack(spacing: isIPad ? 80 : 50) {
                         // Gallery button
                         Button(action: {
                             if freeScanManager.canScan(isPremium: subscriptionManager.hasUnlockedPremium) {
@@ -114,9 +120,9 @@ struct ContentView: View {
                             }
                         }) {
                             Image(systemName: "photo.on.rectangle")
-                                .font(.system(size: 28))
+                                .font(.system(size: isIPad ? 36 : 28))
                                 .foregroundColor(.white)
-                                .frame(width: 50, height: 50)
+                                .frame(width: isIPad ? 70 : 50, height: isIPad ? 70 : 50)
                                 .background(Color.black.opacity(0.3))
                                 .clipShape(Circle())
                         }
@@ -132,15 +138,15 @@ struct ContentView: View {
                             ZStack {
                                 Circle()
                                     .fill(Color.white)
-                                    .frame(width: 80, height: 80)
+                                    .frame(width: isIPad ? 110 : 80, height: isIPad ? 110 : 80)
                                 
                                 Circle()
                                     .fill(Color.white)
-                                    .frame(width: 70, height: 70)
+                                    .frame(width: isIPad ? 95 : 70, height: isIPad ? 95 : 70)
                                     .overlay(
                                         Circle()
-                                            .stroke(Color.black, lineWidth: 3)
-                                            .frame(width: 70, height: 70)
+                                            .stroke(Color.black, lineWidth: isIPad ? 4 : 3)
+                                            .frame(width: isIPad ? 95 : 70, height: isIPad ? 95 : 70)
                                     )
                             }
                         }
@@ -150,19 +156,20 @@ struct ContentView: View {
                             isFlashOn.toggle()
                         }) {
                             Image(systemName: isFlashOn ? "bolt.fill" : "bolt.slash.fill")
-                                .font(.system(size: 28))
+                                .font(.system(size: isIPad ? 36 : 28))
                                 .foregroundColor(.white)
-                                .frame(width: 50, height: 50)
+                                .frame(width: isIPad ? 70 : 50, height: isIPad ? 70 : 50)
                                 .background(Color.black.opacity(0.3))
                                 .clipShape(Circle())
                         }
                     }
-                    .padding(.bottom, 30)
+                    .padding(.bottom, isIPad ? 50 : 30)
                 }
             }
         }
         }
         .navigationBarHidden(true)
+        .navigationViewStyle(StackNavigationViewStyle())
         .sheet(isPresented: $showHistory) {
             NavigationView {
                 HistoryView()

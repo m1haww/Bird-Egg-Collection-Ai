@@ -8,7 +8,7 @@ struct PaywallView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.presentationMode) var presentationMode
     @State private var isProcessing = false
-    @State private var isFreeTrialEnabled = true
+    @State private var isFreeTrialEnabled = false
     @State private var showRestoreAlert = false
     @State private var restoreMessage = ""
     
@@ -20,11 +20,7 @@ struct PaywallView: View {
     }
     
     private var buttonText: String {
-        if isFreeTrialEnabled {
-            return "Try for Free"
-        } else {
-            return "Subscribe Now"
-        }
+        return "Subscribe Now"
     }
     
     var body: some View {
@@ -148,35 +144,8 @@ struct PaywallView: View {
                         }
                         .padding(.horizontal, 20)
                         
-                        // Free Trial Toggle
+                        // Purchase Section
                         VStack(spacing: 15) {
-                            HStack {
-                                Text("Free Trial Enabled")
-                                    .font(.system(size: 18, weight: .medium))
-                                    .foregroundColor(.black)
-                                
-                                Spacer()
-                                
-                                Button(action: {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        isFreeTrialEnabled.toggle()
-                                        updateSelectedPlan()
-                                    }
-                                }) {
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 20)
-                                            .fill(isFreeTrialEnabled ? Color(red: 0.65, green: 0.55, blue: 0.48) : Color.gray.opacity(0.3))
-                                            .frame(width: 50, height: 30)
-                                        
-                                        Circle()
-                                            .fill(Color.white)
-                                            .frame(width: 26, height: 26)
-                                            .offset(x: isFreeTrialEnabled ? 10 : -10)
-                                    }
-                                }
-                            }
-                            .padding(.horizontal, 20)
-                            
                             // Purchase Button
                             Button(action: purchaseSubscription) {
                                 HStack {
@@ -487,14 +456,6 @@ struct SubscriptionPlanCard: View {
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
                                 .background(Color.red.opacity(0.8))
-                                .cornerRadius(8)
-                        } else {
-                            Text("FREE TRIAL")
-                                .font(.system(size: 12, weight: .bold))
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Color.pink.opacity(0.8))
                                 .cornerRadius(8)
                         }
                     }
