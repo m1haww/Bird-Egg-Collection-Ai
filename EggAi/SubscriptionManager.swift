@@ -12,8 +12,8 @@ class SubscriptionManager: ObservableObject {
     @Published var hasUnlockedPremium = false
     
     private let productIds = [
-        "com.vemix.weekly",
-        "com.vemix.yearly"
+        "com.eggai.weekly",
+        "com.eggai.monthly"
     ]
     
     private var updateListenerTask: Task<Void, Error>?

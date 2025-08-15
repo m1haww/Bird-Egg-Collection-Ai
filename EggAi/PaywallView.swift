@@ -110,19 +110,19 @@ struct PaywallView: View {
                         
                         // Subscription Plans
                         VStack(spacing: 12) {
-                            // Yearly Plan
+                            // Monthly Plan
                             SubscriptionPlanCard(
-                                product: subscriptionManager.subscriptions.first { $0.id.contains("yearly") },
-                                isYearly: true,
-                                isSelected: !isFreeTrialEnabled && (selectedProduct?.id.contains("yearly") == true || (!isFreeTrialEnabled && selectedProduct == nil)),
+                                product: subscriptionManager.subscriptions.first { $0.id == "com.eggai.monthly" },
+                                isMonthly: true,
+                                isSelected: !isFreeTrialEnabled && (selectedProduct?.id == "com.eggai.monthly" || (!isFreeTrialEnabled && selectedProduct == nil)),
                                 isProcessing: isProcessing
                             ) {
                                 withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                    if let yearlyProduct = subscriptionManager.subscriptions.first(where: { $0.id.contains("yearly") }) {
-                                        selectedProduct = yearlyProduct
+                                    if let monthlyProduct = subscriptionManager.subscriptions.first(where: { $0.id == "com.eggai.monthly" }) {
+                                        selectedProduct = monthlyProduct
                                         isFreeTrialEnabled = false
                                     } else {
-                                        print("Selected yearly plan (product not loaded yet)")
+                                        print("Selected monthly plan (product not loaded yet)")
                                         isFreeTrialEnabled = false
                                     }
                                 }
@@ -130,13 +130,13 @@ struct PaywallView: View {
                             
                             // Weekly Plan
                             SubscriptionPlanCard(
-                                product: subscriptionManager.subscriptions.first { $0.id.contains("weekly") },
-                                isYearly: false,
-                                isSelected: isFreeTrialEnabled && (selectedProduct?.id.contains("weekly") == true || (isFreeTrialEnabled && selectedProduct == nil)),
+                                product: subscriptionManager.subscriptions.first { $0.id == "com.eggai.weekly" },
+                                isMonthly: false,
+                                isSelected: isFreeTrialEnabled && (selectedProduct?.id == "com.eggai.weekly" || (isFreeTrialEnabled && selectedProduct == nil)),
                                 isProcessing: isProcessing
                             ) {
                                 withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                    if let weeklyProduct = subscriptionManager.subscriptions.first(where: { $0.id.contains("weekly") }) {
+                                    if let weeklyProduct = subscriptionManager.subscriptions.first(where: { $0.id == "com.eggai.weekly" }) {
                                         selectedProduct = weeklyProduct
                                         isFreeTrialEnabled = true
                                     } else {
@@ -330,13 +330,13 @@ struct PaywallView: View {
     private func updateSelectedPlan() {
         if isFreeTrialEnabled {
             // Select weekly plan with free trial
-            if let weeklyProduct = subscriptionManager.subscriptions.first(where: { $0.id.contains("weekly") }) {
+            if let weeklyProduct = subscriptionManager.subscriptions.first(where: { $0.id == "com.eggai.weekly" }) {
                 selectedProduct = weeklyProduct
             }
         } else {
-            // Select yearly plan
-            if let yearlyProduct = subscriptionManager.subscriptions.first(where: { $0.id.contains("yearly") }) {
-                selectedProduct = yearlyProduct
+            // Select monthly plan
+            if let monthlyProduct = subscriptionManager.subscriptions.first(where: { $0.id == "com.eggai.monthly" }) {
+                selectedProduct = monthlyProduct
             }
         }
     }
@@ -398,14 +398,14 @@ struct PaywallFeatureRow: View {
 
 struct SubscriptionPlanCard: View {
     let product: Product?
-    let isYearly: Bool
+    let isMonthly: Bool
     let isSelected: Bool
     let isProcessing: Bool
     let action: () -> Void
     
     private var savings: String? {
-        if isYearly {
-            return "SAVE 90%"
+        if isMonthly {
+            return "SAVE 46%"
         }
         return nil
     }
@@ -447,12 +447,12 @@ struct SubscriptionPlanCard: View {
                 }
             }
         } else {
-            return isYearly ? "year" : "week"
+            return isMonthly ? "month" : "week"
         }
     }
     
     private var displayPrice: String {
-        return product?.displayPrice ?? (isYearly ? "USD 29.99" : "USD 5.99")
+        return product?.displayPrice ?? (isMonthly ? "USD 6.99" : "USD 2.99")
     }
     
     var body: some View {
@@ -474,14 +474,14 @@ struct SubscriptionPlanCard: View {
                 // Content
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
-                        Text(isYearly ? "Yearly Plan" : "Weekly Plan")
+                        Text(isMonthly ? "Monthly Plan" : "Weekly Plan")
                             .font(.system(size: 18, weight: .semibold))
                             .foregroundColor(isSelected ? Color(red: 0.65, green: 0.55, blue: 0.48) : .black)
                         
                         Spacer()
                         
-                        if isYearly {
-                            Text("SAVE 90%")
+                        if isMonthly {
+                            Text("SAVE 46%")
                                 .font(.system(size: 12, weight: .bold))
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 8)
