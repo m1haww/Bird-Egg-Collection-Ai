@@ -125,7 +125,7 @@ struct PermissionRequestView: View {
             }
             
             Button(action: requestAction) {
-                Text("Allow Access")
+                Text("Continue")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
