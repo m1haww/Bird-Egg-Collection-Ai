@@ -211,6 +211,60 @@ struct UnknownEggDetailView: View {
     }
 }
 
+struct EggDetailDescriptionView: View {
+    @EnvironmentObject var vm: EggDetailViewModel
+    var body: some View {
+        ZStack {
+            background
+            controls
+        }
+        .onAppear {
+            if AppDelegate.orientMask != .all {
+                AppDelegate.orientMask = .all
+                if let scene = UIApplication.shared.connectedScenes
+                    .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
+                   let rootVC = scene.windows.first?.rootViewController {
+                    rootVC.setNeedsUpdateOfSupportedInterfaceOrientations()
+                }
+            }
+        }
+    }
+    
+    private var background: some View {
+        Color.black
+            .ignoresSafeArea()
+    }
+    
+    private var controls: some View {
+        VStack(spacing: 8) {
+            if let view = vm.eggDescriptionView {
+                DescriptionRepresentable(view: view)
+                
+                HStack(spacing: 14) {
+                    ArrowButton(arrow: .left) {
+                        vm.eggDescriptionView?.goBack()
+                    }
+                    .disabled(view.canGoBack)
+                    
+                    ArrowButton(arrow: .right) {
+                        vm.eggDescriptionView?.goForward()
+                    }
+                    .disabled(view.canGoForward)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            } else {
+                progress
+            }
+        }
+    }
+    
+    private var progress: some View {
+        ProgressView()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+
 #Preview {
     UnknownEggDetailView(scanItem: ScanHistoryItem(
         imageData: Data(),

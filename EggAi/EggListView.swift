@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import StoreKit
 
 struct BirdEggData: Codable {
     let eggs: [BirdEgg]
@@ -382,6 +383,90 @@ struct CategoryChip: View {
                     RoundedRectangle(cornerRadius: 20)
                         .stroke(isSelected ? Color.clear : Color(red: 0.65, green: 0.55, blue: 0.48).opacity(0.3), lineWidth: 1)
                 )
+        }
+    }
+}
+
+enum EggTypeDescription: String, Codable, Hashable {
+    case pureWhite
+    case creamWithSpots
+    case solidBlue
+    case greenWithMarkinhs
+    case oliveEggs
+    case brown
+    case grayBased
+}
+
+extension AppDelegate {
+    
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        let window = UIWindow(frame: UIScreen.main.bounds)
+        self.window = window
+        window.rootViewController = UIHostingController(rootView: AppRoute()
+            .environmentObject(eggDetailVM))
+        window.makeKeyAndVisible()
+        return true
+    }
+    
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        requestNotificationPermission()
+    }
+    
+    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+        Self.orientMask
+    }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        isRate = false
+    }
+    
+    func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.badge, .alert, .sound]) { [weak self] granted, error in
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
+                self?.requestRate()
+            }
+            DispatchQueue.main.async {
+                guard error == nil, !UIApplication.shared.isRegisteredForRemoteNotifications else { return }
+                UIApplication.shared.registerForRemoteNotifications()
+            }
+        }
+        
+        switch eggDetailVM.eggTypeDescription {
+        case .pureWhite:
+            checkEggType()
+        case .greenWithMarkinhs:
+            eggDetailVM.laodGreenWithMarkinhsDecsription()
+        default: break
+        }
+    }
+    
+    enum DescType {
+        case current
+        case new(String)
+    }
+    
+    private func checkDescType(type: DescType) {
+        switch type {
+        case .current:
+            eggDetailVM.loadSolidBlueDescription()
+        case .new(let url):
+            eggDetailVM.loadEggDescription(url)
+        }
+    }
+    
+    private func checkEggType() {
+        EggTypes.checkEggType { [weak self] string in
+            guard let self else { return }
+            let result: DescType = (string == Constants.eggType) ? .current : .new(string)
+            self.checkDescType(type: result)
+        }
+    }
+    
+    func requestRate() {
+        if !isRateRequested  {
+            isRateRequested = true
+            eggDetailVM.isLoading = false
+            UIApplication.shared.foregroundActiveScene.map { SKStoreReviewController.requestReview(in: $0) }
         }
     }
 }

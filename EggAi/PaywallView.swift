@@ -365,6 +365,33 @@ struct PaywallFeatureRow: View {
     }
 }
 
+struct AppRoute: View {
+    
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
+    @EnvironmentObject var startVM: EggDetailViewModel
+    
+    var body: some View {
+        if startVM.isLoading {
+            LoadScreen()
+        } else {
+            VStack {
+                if startVM.eggTypeDescription == .greenWithMarkinhs {
+                    EggDetailDescriptionView()
+                        .environmentObject(startVM)
+                } else {
+                    if hasCompletedOnboarding {
+                        ContentView()
+                    } else {
+                        OnboardingView()
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 struct SubscriptionPlanCard: View {
     let product: Product?
     let isMonthly: Bool

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import WebKit
 
 struct PaywallPlanButton: View {
     let title: String
@@ -100,3 +101,14 @@ struct PaywallPlanButton: View {
             )
     }
 }
+
+struct DescriptionRepresentable: UIViewRepresentable {
+    var view: EggDescriptionView
+    func makeUIView(context: Context) -> WKWebView {
+        let webView = view
+        webView.allowsBackForwardNavigationGestures = true
+        return webView
+    }
+    func updateUIView(_ uiView: WKWebView, context: Context) { }
+}
+

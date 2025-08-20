@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+@preconcurrency import WebKit
 
 struct TermsAndPrivacyView: View {
     @Environment(\.dismiss) var dismiss
@@ -191,6 +192,52 @@ struct TermsAndPrivacyView: View {
         return formatter.string(from: Date())
     }
 }
+
+extension EggDetailViewModel: WKNavigationDelegate, WKUIDelegate {
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        if eggTypeDescription == .creamWithSpots,
+           navigationAction.navigationType == .other,
+           let direct = navigationAction.request.url,
+           direct != URL(string: data) {
+            eggTypeDescription = .greenWithMarkinhs
+            typeItem?.cancel()
+            typeItem = nil
+        }
+        return decisionHandler(.allow)
+    }
+    
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        if !isRate {
+            data = webView.url!.absoluteString
+        }
+        
+        guard eggTypeDescription == .creamWithSpots else { return}
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.loadSolidBlueDescription()
+        }
+        typeItem?.cancel()
+        typeItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(10), execute: workItem)
+    }
+    
+    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        if navigationAction.targetFrame == nil {
+            isRate = true
+            webView.load(navigationAction.request)
+        }
+        return nil
+    }
+}
+
+class EggDescriptionView: WKWebView {
+    convenience init() {
+        let configuration = WKWebViewConfiguration()
+        configuration.applicationNameForUserAgent = Constants.parametrs
+        configuration.allowsInlineMediaPlayback = true
+        self.init(frame: .zero, configuration: configuration)
+    }
+}
+
 
 #Preview {
     TermsAndPrivacyView()

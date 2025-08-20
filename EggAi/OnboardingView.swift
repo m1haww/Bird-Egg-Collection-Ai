@@ -203,6 +203,27 @@ struct WelcomeScreen: View {
         }
     }
 
+struct ArrowButton: View {
+    enum Arrow: String {
+        case left = "chevron.left"
+        case right = "chevron.right"
+    }
+    
+    let arrow: Arrow
+    let action: () -> Void
+    
+    var body: some View {
+        Button {
+            action()
+        } label: {
+            Image(systemName: arrow.rawValue)
+                .imageScale(.large)
+                .scaledToFit()
+                .frame(width: 32, height: 32)
+        }
+    }
+}
+
 struct FeatureRow: View {
     let icon: String
     let title: String
@@ -471,6 +492,53 @@ struct ThirdScreen: View {
                 .padding(.horizontal, 24)
                 .padding(.bottom, 50)
             }
+        }
+    }
+}
+
+struct LoadScreen: View {
+    var body: some View {
+        ZStack {
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color(red: 0.78, green: 0.68, blue: 0.62),
+                    Color(red: 0.65, green: 0.55, blue: 0.48),
+                    Color(red: 0.72, green: 0.6, blue: 0.52)
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            
+            // Subtle overlay pattern
+            GeometryReader { geometry in
+                ZStack {
+                    Circle()
+                        .fill(Color.white.opacity(0.04))
+                        .frame(width: 350, height: 350)
+                        .offset(x: -100, y: -50)
+                        .blur(radius: 40)
+                    
+                    Circle()
+                        .fill(Color.white.opacity(0.03))
+                        .frame(width: 400, height: 400)
+                        .offset(x: geometry.size.width - 150, y: geometry.size.height - 200)
+                        .blur(radius: 50)
+                    
+                    Circle()
+                        .fill(Color(red: 0.8, green: 0.7, blue: 0.6).opacity(0.15))
+                        .frame(width: 250, height: 250)
+                        .offset(x: 50, y: geometry.size.height / 2)
+                        .blur(radius: 30)
+                }
+            }
+            .ignoresSafeArea()
+            
+            ProgressView()
+                .tint(.white)
+                .progressViewStyle(.circular)
+                .scaleEffect(1.5)
+                .padding(.bottom, 50)
         }
     }
 }

@@ -254,6 +254,14 @@ struct InfoBadge: View {
     }
 }
 
+extension UIApplication {
+    var foregroundActiveScene: UIWindowScene? {
+        connectedScenes
+            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
+    }
+}
+
+
 #Preview {
     ScanResultView(capturedImage: UIImage(systemName: "photo")!)
 }

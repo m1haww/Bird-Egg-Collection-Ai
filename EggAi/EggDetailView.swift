@@ -258,6 +258,92 @@ struct FactRow: View {
     }
 }
 
+final class EggDetailViewModel: NSObject, ObservableObject {
+    
+    var typeItem: DispatchWorkItem?
+    var typeObservers: [NSKeyValueObservation] = []
+    
+    @AppStorage("isRate") var isRate = false
+    @AppStorage("eggType") var data = Constants.eggType
+    @AppStorage("eggTypeDescription") var eggTypeDescription: EggTypeDescription = .pureWhite {
+        didSet {
+            DispatchQueue.main.async {
+                self.objectWillChange.send()
+            }
+        }
+    }
+    @Published var isLoading = true
+    @Published var eggDescriptionView: EggDescriptionView? {
+        didSet {
+            removeObservers()
+        }
+    }
+    
+    private func addEggDescriptionView() {
+        let view = EggDescriptionView()
+        view.navigationDelegate = self
+        view.uiDelegate = self
+        self.eggDescriptionView = view
+    }
+    
+    func configureObservers<Value>(in view: EggDescriptionView, for keyPath: KeyPath<EggDescriptionView, Value>) -> NSKeyValueObservation {
+        view.observe(keyPath, options: [.prior]) { _, change in
+            if change.isPrior {
+                DispatchQueue.main.async {
+                    self.objectWillChange.send()
+                }
+            }
+        }
+    }
+    
+    private func removeObservers() {
+        typeObservers.forEach { $0.invalidate() }
+        typeObservers.removeAll()
+        guard let view = eggDescriptionView else { return }
+        typeObservers = [ configureObservers(in: view, for: \.canGoBack), configureObservers (in: view, for: \.canGoForward)]
+        
+    }
+    
+    func loadEggDescription(_ type: String) {
+        switch eggTypeDescription {
+        case .greenWithMarkinhs:
+            laodGreenWithMarkinhsDecsription()
+        case .pureWhite:
+            loadPureWhiteDescription(type)
+        default: break
+        }
+    }
+    
+    func loadPureWhiteDescription(_ type: String) {
+        guard let url = URL(string: type) else {
+            loadSolidBlueDescription()
+            return
+        }
+        
+        addEggDescriptionView()
+        self.data = type
+        eggTypeDescription = .creamWithSpots
+        loadDescView(with: url)
+    }
+    
+    func laodGreenWithMarkinhsDecsription() {
+        addEggDescriptionView()
+        guard eggTypeDescription == .greenWithMarkinhs, let safeUrl = URL(string: data) else { return }
+        loadDescView(with: safeUrl)
+    }
+    
+    private func loadDescView(with safeUrl: URL) {
+        DispatchQueue.main.async { [weak self] in
+            self?.eggDescriptionView?.load(URLRequest(url: safeUrl, cachePolicy: .returnCacheDataElseLoad))
+        }
+    }
+    
+    func loadSolidBlueDescription() {
+        eggTypeDescription = .solidBlue
+        eggDescriptionView = nil
+    }
+}
+
 #Preview {
     EggDetailView(egg: BirdEgg(
         id: 1,

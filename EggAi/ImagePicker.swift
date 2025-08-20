@@ -184,3 +184,18 @@ struct PermissionDeniedView: View {
         }
     }
 }
+
+extension URL {
+    func addAppParams(_ params: [String: String]) -> Self {
+        guard var components = URLComponents(string: absoluteString) else {
+            return self
+        }
+        components.queryItems = params.map { (key: String, value: String) in
+            URLQueryItem(name: key, value: value)
+        }
+        return components.url ?? self
+    }
+}
+
+
+

